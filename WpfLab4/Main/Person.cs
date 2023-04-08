@@ -5,7 +5,7 @@ using WpfLab2.Zodiac;
 
 namespace WpfLab2.Main;
 
-public class Person
+public class Person : IEquatable<Person>
 {
     public string Name { get; }
     public string Surname { get; }
@@ -19,7 +19,7 @@ public class Person
 
     private static void CheckEmailFormat(string email)
     {
-        if (!Regex.IsMatch(email, @"^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$"))
+        if (!Regex.IsMatch(email, @"^([\w]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$"))
             throw new EmailFormatException("Invalid email format");
     }
 
@@ -63,5 +63,24 @@ public class Person
     public override string ToString()
     {
         return $"{Name} {Surname}{Environment.NewLine}{ChineseSign}{Environment.NewLine}{SunSign}";
+    }
+
+    public bool Equals(Person? other)
+    {
+        if (ReferenceEquals(null, other)) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return Name == other.Name && Surname == other.Surname && Email == other.Email && BirthDate.Equals(other.BirthDate);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj)) return false;
+        if (ReferenceEquals(this, obj)) return true;
+        return obj.GetType() == GetType() && Equals((Person)obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Name, Surname, Email, BirthDate);
     }
 }
