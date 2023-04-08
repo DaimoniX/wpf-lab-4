@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -13,8 +14,26 @@ public class MainViewModel : INotifyPropertyChanged
     
     private bool _inputWindowHidden;
     private bool _dbHasSelection;
-
     private ObservableCollection<Person> _usersDb;
+    
+    public bool InputWindowHidden
+    {
+        get => _inputWindowHidden;
+        set => SetField(ref _inputWindowHidden, value);
+    }
+    
+    public bool DbHasSelection
+    {
+        get => _dbHasSelection;
+        set => SetField(ref _dbHasSelection, value);
+    }
+    
+    public ObservableCollection<Person> UsersDb
+    {
+        get => _usersDb;
+        set => SetField(ref _usersDb, value);
+    }
+
     private readonly SerializationManager _serialization;
     private static readonly string DbPath = Path.Combine(Directory.GetCurrentDirectory(), "usersDb.json");
 
@@ -33,30 +52,23 @@ public class MainViewModel : INotifyPropertyChanged
         {
             var generator = new PersonGenerator();
             _usersDb = new ObservableCollection<Person>();
-            for (var i = 0; i < 1000; i++)
+            for (var i = 0; i < 50; i++)
                 UsersDb.Add(generator.GeneratePerson());
         }
+        _usersDb.CollectionChanged += UsersDbOnCollectionChanged;
         Save();
     }
 
-    public bool InputWindowHidden
+    private void Save()
     {
-        get => _inputWindowHidden;
-        set => SetField(ref _inputWindowHidden, value);
+        _serialization.SerializeUsers(_usersDb);
     }
     
-    public bool DbHasSelection
+    private void UsersDbOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        get => _dbHasSelection;
-        set => SetField(ref _dbHasSelection, value);
+        Save();
     }
-    
-    public ObservableCollection<Person> UsersDb
-    {
-        get => _usersDb;
-        set => SetField(ref _usersDb, value);
-    }
-    
+
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -67,10 +79,5 @@ public class MainViewModel : INotifyPropertyChanged
         if (EqualityComparer<T>.Default.Equals(field, value)) return;
         field = value;
         OnPropertyChanged(propertyName);
-    }
-
-    public void Save()
-    {
-        _serialization.SerializeUsers(_usersDb);
     }
 }

@@ -8,12 +8,4 @@
         <RootNamespace>WpfLab2</RootNamespace>
     </PropertyGroup>
 
-    <ItemGroup>
-      <Page Update="Old\OldMainWindow.xaml">
-        <Generator>MSBuild:Compile</Generator>
-        <XamlRuntime>Wpf</XamlRuntime>
-        <SubType>Designer</SubType>
-      </Page>
-    </ItemGroup>
-
 </Project>
