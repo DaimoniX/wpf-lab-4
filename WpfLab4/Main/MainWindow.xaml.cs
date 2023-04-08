@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using WpfLab2.Input;
 
 namespace WpfLab2.Main
@@ -11,28 +12,23 @@ namespace WpfLab2.Main
     public partial class MainWindow : Window
     {
         private readonly MainViewModel _mainViewModel;
-        private readonly ObservableCollection<Person> _users;
 
         public MainWindow()
         {
-            var generator = new PersonGenerator();
             DataContext = _mainViewModel = new MainViewModel();
-            _users = new ObservableCollection<Person>();
             InitializeComponent();
-            for(var i = 0; i < 1000; i++)
-                AddToDb(generator.GeneratePerson());
-            UsersGrid.DataContext = _users;
+            UsersGrid.DataContext = _mainViewModel.UsersDb;
         }
 
         public void AddToDb(Person person)
         {
-            _users.Add(person);
+            _mainViewModel.UsersDb.Add(person);
         }
 
         private void RemoveButtonClick(object sender, RoutedEventArgs e)
         {
-            if(UsersGrid.SelectedIndex > -1)
-                _users.RemoveAt(UsersGrid.SelectedIndex);
+            if (UsersGrid.SelectedIndex > -1)
+                _mainViewModel.UsersDb.RemoveAt(UsersGrid.SelectedIndex);
         }
 
         private void AddButtonClick(object sender, RoutedEventArgs e)
@@ -52,6 +48,11 @@ namespace WpfLab2.Main
         private void InputWindowOnOnPersonCreated(object? sender, Person e)
         {
             AddToDb(e);
+        }
+
+        private void UsersGridOnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            _mainViewModel.DbHasSelection = UsersGrid.SelectedIndex > -1;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using WpfLab2.Exceptions;
 using WpfLab2.Zodiac;
@@ -11,10 +12,14 @@ public class Person : IEquatable<Person>
     public string Surname { get; }
     public string Email { get; }
     public DateTime BirthDate { get; }
-    
+
+    [JsonIgnore]
     public bool IsAdult { get; }
+    [JsonIgnore]
     public SunSign SunSign { get; }
+    [JsonIgnore]
     public ChineseSign ChineseSign { get; }
+    [JsonIgnore]
     public bool IsBirthday { get; }
 
     private static void CheckEmailFormat(string email)
@@ -40,6 +45,7 @@ public class Person : IEquatable<Person>
             throw new InvalidSurnameException("Invalid surname");
     }
 
+    [JsonConstructor]
     public Person(string name, string surname, string email, DateTime birthDate)
     {
         CheckNameSurname(name, surname);

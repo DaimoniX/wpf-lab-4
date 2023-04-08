@@ -7,9 +7,6 @@
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=main:MainViewModel}"
         Title="MainWindow" MinHeight="400" MinWidth="800" Height="460" Width="920">
-    <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
-    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
@@ -24,9 +21,9 @@
         <DockPanel Grid.Column="1" Grid.Row="1" IsEnabled="{Binding InputWindowHidden}" LastChildFill="True">
             <UniformGrid DockPanel.Dock="Top" Rows="1">
                 <Button Content="Add" DockPanel.Dock="Top" Click="AddButtonClick" />
-                <Button Content="Remove" DockPanel.Dock="Top" Click="RemoveButtonClick" />
+                <Button Content="Remove" DockPanel.Dock="Top" Click="RemoveButtonClick" IsEnabled="{Binding DbHasSelection}"/>
             </UniformGrid>
-            <DataGrid x:Name="UsersGrid" ItemsSource="{Binding}" AlternatingRowBackground="LightBlue" AlternationCount="2" DockPanel.Dock="Bottom" />
+            <DataGrid x:Name="UsersGrid" ItemsSource="{Binding}" AutoGenerateColumns="True" AlternatingRowBackground="LightBlue" AlternationCount="2" DockPanel.Dock="Bottom" SelectionChanged="UsersGridOnSelectionChanged" SelectionMode="Single" />
         </DockPanel>
     </Grid>
 </Window>

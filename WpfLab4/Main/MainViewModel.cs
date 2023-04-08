@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.CompilerServices;
 
 namespace WpfLab2.Main;
@@ -8,32 +11,32 @@ public class MainViewModel : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
     
-    private Person? _person;
-    private bool _isSet;
     private bool _inputWindowHidden;
+    private bool _dbHasSelection;
+
+    private ObservableCollection<Person> _usersDb;
+    private readonly SerializationManager _serialization;
+    private static readonly string DbPath = Path.Combine(Directory.GetCurrentDirectory(), "usersDb.json");
 
     public MainViewModel()
     {
-        _person = null;
-        _isSet = false;
         _inputWindowHidden = true;
-    }
-
-    public bool IsSet
-    {
-        get => _isSet;
-        private set => SetField(ref _isSet, value);
-    }
-    
-    public Person? Person
-    {
-        get => _person;
-        set
+        _serialization = new SerializationManager(DbPath);
+        try
         {
-            IsSet = true;
-            SetField(ref _person, value);
-            OnPropertyChanged(null);
+            if (_serialization.HasDatabase())
+                _usersDb = _serialization.DeserializeUsers() ?? throw new NullReferenceException();
+            if (_usersDb is null)
+                throw new NullReferenceException();
         }
+        catch (Exception)
+        {
+            var generator = new PersonGenerator();
+            _usersDb = new ObservableCollection<Person>();
+            for (var i = 0; i < 1000; i++)
+                UsersDb.Add(generator.GeneratePerson());
+        }
+        Save();
     }
 
     public bool InputWindowHidden
@@ -42,16 +45,32 @@ public class MainViewModel : INotifyPropertyChanged
         set => SetField(ref _inputWindowHidden, value);
     }
     
+    public bool DbHasSelection
+    {
+        get => _dbHasSelection;
+        set => SetField(ref _dbHasSelection, value);
+    }
+    
+    public ObservableCollection<Person> UsersDb
+    {
+        get => _usersDb;
+        set => SetField(ref _usersDb, value);
+    }
+    
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    private bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+    private void SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
     {
-        if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+        if (EqualityComparer<T>.Default.Equals(field, value)) return;
         field = value;
         OnPropertyChanged(propertyName);
-        return true;
+    }
+
+    public void Save()
+    {
+        _serialization.SerializeUsers(_usersDb);
     }
 }
