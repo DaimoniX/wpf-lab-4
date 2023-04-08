@@ -25,6 +25,15 @@ namespace WpfLab2.Main
             _mainViewModel.UsersDb.Add(person);
         }
 
+        private void EditButtonClick(object sender, RoutedEventArgs e)
+        {
+            var inputWindow = new InputWindow(UsersGrid.SelectedItem as Person);
+            inputWindow.OnPersonCreated += InputWindowOnOnPersonEdited;
+            inputWindow.Closed += InputWindowOnClosed;
+            _mainViewModel.InputWindowHidden = false;
+            inputWindow.Show();
+        }
+
         private void RemoveButtonClick(object sender, RoutedEventArgs e)
         {
             if (UsersGrid.SelectedIndex > -1)
@@ -43,6 +52,11 @@ namespace WpfLab2.Main
         private void InputWindowOnClosed(object? sender, EventArgs e)
         {
             _mainViewModel.InputWindowHidden = true;
+        }
+
+        private void InputWindowOnOnPersonEdited(object? sender, Person e)
+        {
+            _mainViewModel.UsersDb.SetItem(UsersGrid.SelectedIndex, e);
         }
 
         private void InputWindowOnOnPersonCreated(object? sender, Person e)

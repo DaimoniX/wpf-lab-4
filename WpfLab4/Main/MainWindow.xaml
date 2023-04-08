@@ -22,6 +22,7 @@
             <UniformGrid DockPanel.Dock="Top" Rows="1">
                 <Button Content="Add" DockPanel.Dock="Top" Click="AddButtonClick" />
                 <Button Content="Remove" DockPanel.Dock="Top" Click="RemoveButtonClick" IsEnabled="{Binding DbHasSelection}"/>
+                <Button Content="Edit" DockPanel.Dock="Top" Click="EditButtonClick" IsEnabled="{Binding DbHasSelection}"/>
             </UniformGrid>
             <DataGrid x:Name="UsersGrid" ItemsSource="{Binding}" AutoGenerateColumns="True" AlternatingRowBackground="LightBlue" AlternationCount="2" DockPanel.Dock="Bottom" SelectionChanged="UsersGridOnSelectionChanged" SelectionMode="Single" />
         </DockPanel>

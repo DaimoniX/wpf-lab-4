@@ -17,6 +17,11 @@ public partial class InputWindow : Window
         InitializeComponent();
     }
 
+    public InputWindow(Person initialState) : this()
+    {
+        
+    }
+
     private async void Button_Click(object sender, RoutedEventArgs e)
     {
         if (_inputViewModel.BirthDate is null)
