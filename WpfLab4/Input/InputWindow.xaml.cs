@@ -23,6 +23,7 @@ public partial class InputWindow
         _inputViewModel.Surname = initialState.Surname;
         _inputViewModel.Email = initialState.Email;
         _inputViewModel.BirthDate = initialState.BirthDate;
+        DatePicker.SelectedDate = initialState.BirthDate;
     }
 
     private async void Button_Click(object sender, RoutedEventArgs e)

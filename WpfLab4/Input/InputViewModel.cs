@@ -88,17 +88,20 @@ public class InputViewModel : INotifyPropertyChanged
     public bool IsBusy
     {
         get => !IsReady;
-        private set => OnPropertyChanged();
+        private set
+        {
+            _isReady = !value;
+            OnPropertyChanged();
+        }
     }
-	
-	public async Task<Person> Calculate()
+
+    public Task<Person> Calculate()
     {
         if (BirthDate is null) throw new InvalidBirthDateException();
 		IsReady = false;
 		var person = new Person(Name, Surname, Email, BirthDate.Value);
-        await Task.Delay(1000);
         IsReady = true;
-		return person;
+		return Task.FromResult(person);
 	}
 
     private void CheckAllFields()
@@ -111,11 +114,10 @@ public class InputViewModel : INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
     
-    private bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+    private void SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
     {
-        if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+        if (EqualityComparer<T>.Default.Equals(field, value)) return;
         field = value;
         OnPropertyChanged(propertyName);
-        return true;
     }
 }
