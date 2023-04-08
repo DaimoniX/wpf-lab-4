@@ -6,7 +6,7 @@ using WpfLab2.Main;
 
 namespace WpfLab2.Input;
 
-public partial class InputWindow : Window
+public partial class InputWindow
 {
     private readonly InputViewModel _inputViewModel;
     public event EventHandler<Person>? OnPersonCreated;
@@ -19,7 +19,10 @@ public partial class InputWindow : Window
 
     public InputWindow(Person initialState) : this()
     {
-        
+        _inputViewModel.Name = initialState.Name;
+        _inputViewModel.Surname = initialState.Surname;
+        _inputViewModel.Email = initialState.Email;
+        _inputViewModel.BirthDate = initialState.BirthDate;
     }
 
     private async void Button_Click(object sender, RoutedEventArgs e)

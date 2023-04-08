@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using WpfLab2.Input;
@@ -9,7 +8,7 @@ namespace WpfLab2.Main
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         private readonly MainViewModel _mainViewModel;
 
@@ -20,14 +19,15 @@ namespace WpfLab2.Main
             UsersGrid.DataContext = _mainViewModel.UsersDb;
         }
 
-        public void AddToDb(Person person)
+        private void AddToDb(Person person)
         {
             _mainViewModel.UsersDb.Add(person);
         }
 
         private void EditButtonClick(object sender, RoutedEventArgs e)
         {
-            var inputWindow = new InputWindow(UsersGrid.SelectedItem as Person);
+            if (UsersGrid.SelectedItem is not Person person) return;
+            var inputWindow = new InputWindow(person);
             inputWindow.OnPersonCreated += InputWindowOnOnPersonEdited;
             inputWindow.Closed += InputWindowOnClosed;
             _mainViewModel.InputWindowHidden = false;
@@ -37,7 +37,7 @@ namespace WpfLab2.Main
         private void RemoveButtonClick(object sender, RoutedEventArgs e)
         {
             if (UsersGrid.SelectedIndex > -1)
-                _mainViewModel.UsersDb.RemoveAt(UsersGrid.SelectedIndex);
+                _mainViewModel.UsersDb.RemoveAt(SelectedIndex());
         }
 
         private void AddButtonClick(object sender, RoutedEventArgs e)
@@ -54,9 +54,9 @@ namespace WpfLab2.Main
             _mainViewModel.InputWindowHidden = true;
         }
 
-        private void InputWindowOnOnPersonEdited(object? sender, Person e)
+        private void InputWindowOnOnPersonEdited(object? sender, Person p)
         {
-            _mainViewModel.UsersDb.SetItem(UsersGrid.SelectedIndex, e);
+            _mainViewModel.UsersDb[SelectedIndex()] = p;
         }
 
         private void InputWindowOnOnPersonCreated(object? sender, Person e)
@@ -67,6 +67,13 @@ namespace WpfLab2.Main
         private void UsersGridOnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             _mainViewModel.DbHasSelection = UsersGrid.SelectedIndex > -1;
+        }
+
+        private int SelectedIndex()
+        {
+            var selectedItem = UsersGrid.SelectedItem;
+            if (selectedItem is not Person selectedPerson) return -1;
+            return _mainViewModel.UsersDb.IndexOf(selectedPerson);
         }
     }
 }
